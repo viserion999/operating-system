@@ -1,3 +1,8 @@
+/*PROBLEM 2: SLEEPING BARBER PROBLEM A barbershop consists of a waiting room with n chairs and a barber room with one barber chair.
+If there are no customers to be served, the barber goes to sleep. If a customer the shop. If the barber is busy but chairs are available,
+then the customer sits in one of the free chairs. If the barber is asleep, the customer wakes up the barber. 
+Write a enters the barbershop and all chairs are occupied, then the customer leaves program to coordinate the barber and the customers.
+*/
 #include <stdio.h>
 #include<unistd.h>
 #include <stdlib.h>
@@ -32,7 +37,7 @@ int main(int argc, char *argv[])
         pthread_attr_init(&customerMAttr);
  
         printf("\n\n");
-        print("……………………………………………………………………………………….");
+        print("â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦.");
  
         //create cutomerMaker
         pthread_create(&customerM,&customerMAttr,customer_pointer,NULL);
