@@ -59,7 +59,9 @@ void *customer_pointer()
         pthread_t customer[seats+1];
         pthread_attr_t customerAttr[seats+1];
         while(i<(seats+1))
-        {
+        {       
+                i++;
+                pthread_attr_init(&customerAttr[i]);
                  while(rand()%2!=1)
                 {
                         sleep(1);
@@ -116,9 +118,15 @@ void *barber_shop()
 void check()
 {
         curr++;
-       
+        printf("\tCustomer has arrived in the waiting room.\t\t\t\t\t\t\t%d Customers in store.\n",curr);
+        fflush(stdout);
         if(curr<seats)
-        {
+        {       if(sleeping==1)
+                {
+                        printf("\t\t\tBarber is sleeping, customer wakes him.\n");
+                        fflush(stdout);
+                        pthread_cond_signal(&barberSleep_cond);
+                }
                 printf("\t\tCustomer takes a seat.\n");
                 fflush(stdout);
                 pthread_mutex_unlock(&queue_mutex);
