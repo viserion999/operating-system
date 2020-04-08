@@ -1,0 +1,156 @@
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <time.h>
+
+#define MAX_USER 30
+void *barber(void *number);
+
+void *customer(void *number);
+
+void randwait(int sec);
+
+sem_t waiting_room;
+
+sem_t barber_chair;
+
+sem_t barber_pillow;
+
+sem_t seat_belt;
+
+int all_done = 0;
+
+int main(int arc, char *arv[]) {
+pthread_t b_id;
+pthread_t t_id[MAX_USER];
+long Temp1;
+int i, customer_number, chair_number;
+int Number[MAX_USER];
+
+printf("Enter the number of Custmors : "); scanf("%d",&customer_number) ;
+printf("Enter the number of Chairs : "); scanf("%d",&chair_number);
+
+
+if (customer_number > MAX_USER) {
+printf("\n[ The maximum number of Customer is : %d.]\n", MAX_USER);
+exit(-1);
+}
+for (i=0; i<MAX_USER; i++) {
+Number[i] = i+1;
+}
+
+sem_init(&waiting_room, 0, chair_number);
+sem_init(&barber_chair, 0, 1);
+sem_init(&barber_pillow, 0, 0);
+sem_init(&seat_belt, 0, 0);
+
+
+
+for (i=0; i<customer_number; i++) {
+	pthread_create(&b_id, NULL, barber, (void *) &Number[i]);
+pthread_create(&t_id[i], NULL, customer, (void *) &Number[i]);
+sleep(2);
+}
+
+for (i=0; i<customer_number; i++) {
+pthread_join(t_id[i],NULL);
+sleep(2);
+}
+
+
+all_done = 1;
+sem_post(&barber_pillow); // Wake the barber so he will exit.
+pthread_join(b_id,NULL);
+}
+
+void *customer(void *numberS) {
+int number = *(int *)numberS;
+
+printf("\n_________________________________________________________________________________________________________________________________________________\n\n");
+
+printf("[HOME : %d] ----%d----> BARBER SHOP [            ARRIVED            WAITNIG ROOM            CUTTING STARTS          CUTTING END            LEAVING]\t",number,number);
+printf( "Customer no : %d [ leaving home for barber shop. ]\n", number);
+
+
+randwait(3);
+
+printf("\n_________________________________________________________________________________________________________________________________________________\n\n");
+
+printf("[HOME : %d]            BARBER SHOP [ ----%d----> ARRIVED            WAITNIG ROOM            CUTTING STARTS          CUTTING END            LEAVING]\t",number,number);
+printf("Customer no : %d [ arrived at barber shop. ]\n", number);
+
+
+sem_wait(&waiting_room);
+printf("\n_________________________________________________________________________________________________________________________________________________\n\n");
+
+
+printf("[HOME : %d]            BARBER SHOP [            ARRIVED ----%d----> WAITNIG ROOM            CUTTING STARTS          CUTTING END            LEAVING]\t",number,number);
+printf("Customer no : %d [ entering waiting room. ]\n", number);
+
+
+sem_wait(&barber_chair);
+
+sem_post(&waiting_room);
+printf("\n_________________________________________________________________________________________________________________________________________________\n\n");
+printf("\n                             ******************** Customer %d waking the barber.*************************                                        \n", number);
+sem_post(&barber_pillow);
+
+sem_wait(&seat_belt);
+sem_post(&barber_chair);
+
+printf("\n_________________________________________________________________________________________________________________________________________________\n\n");
+
+printf("[HOME : %d]            BARBER SHOP [            ARRIVED            WAITNIG ROOM            CUTTING STARTS          CUTTING END ----%d----> LEAVING]\t",number,number);
+printf("Customer no : %d [ leaving barber shop. ]\n", number);
+
+}
+
+void *barber(void *numberS) {
+while (!all_done) {
+	int number=*(int*)numberS;
+printf("\n\n_________________________________________________________________________________________________________________________________________________\n\n");
+
+printf("__________________________________________\n");
+printf("|                              _    _     |\n");
+printf("|Barber is sleeping   (:--| )_/____/      |\n");
+printf("|                            /_   /_      |\n");
+printf("|_________________________________________|\n");
+sem_wait(&barber_pillow);
+if (!all_done) {
+
+
+printf("\n\n______________________________________________________________________________________________________________________________________________________\n");
+printf("|                                                                                                                                                     |\n");
+printf("|[HOME : %d]             BARBER SHOP [            ARRIVED            WAITNIG ROOM ----%d----> CUTTING STARTS            CUTTING END             LEAVING]|\t",number,number);
+printf("The barber is cutting hair\n");
+printf("|                                                                                            (  .   .  )                                              |\n");
+printf("|                                                                                                 |                                                   |\n");
+printf("|                                                                                                (__)                                                 |\n");
+printf("|_____________________________________________________________________________________________________________________________________________________|\n\n");
+
+randwait(2);
+printf("\n__________________________________________________________________________________________________________________________________________________\n\n");
+printf("[HOME : %d]            BARBER SHOP [            ARRIVED            WAITNIG ROOM            CUTTING STARTS ----%d---> CUTTING END            LEAVING]\t",number,number);
+printf("Customer no : %d [ The barber has finished cutting hair.]\n",number);
+
+
+sem_post(&seat_belt);
+}
+else {
+	
+printf("\n\n``````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````\n");
+
+printf("\n                                                            SHOP CLOSED");
+exit(-1);
+}
+}
+}
+
+void randwait(int secs) {
+int len;
+
+len = (int) ((1 * secs) + 1);
+sleep(len+1);
+}
