@@ -4,7 +4,7 @@
   Scheduler must maintain a queue that keeps the order of execution of all the processes. Compute average waiting and turnaround time.
  */
 
-
+//I want to eat a quarter rara chicken and 5 butter roti, and after that achicken cheese burger with 250gms of french fries, lastly just give me a small double cheese farmhouse pizza.
 #include<stdio.h>
 #include<stdlib.h>
 #include<conio.h> 
