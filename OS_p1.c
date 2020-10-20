@@ -10,6 +10,7 @@
 #include<conio.h> 
 int main() 
 { 
+	//jhhhhhhhhhjhjhjhjjjjjjjj
   int check=0;
   int count;
   int i;
